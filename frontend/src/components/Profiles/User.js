@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import imgDefault from "../../images/default.jpeg";
-import { Link } from "react-router-dom";
+//import { Link } from "react-router-dom";
 import axios from "axios";
 const User = () => {
   const [user] = useState(JSON.parse(localStorage.getItem("loggedUser")));

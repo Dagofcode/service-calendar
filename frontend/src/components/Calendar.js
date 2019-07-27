@@ -1,10 +1,44 @@
+/* eslint-disable no-loop-func */
 import React from "react";
 import dateFns from "date-fns";
+import axios from "axios";
+import { Link } from "react-router-dom";
 
 class Calendar extends React.Component {
   state = {
     currentMonth: new Date(),
-    selectedDate: new Date()
+    selectedDate: new Date(),
+    posts: [],
+    currentDay: "",
+    cMonth: "",
+    currentYear: ""
+  };
+
+  componentWillMount() {
+    axios
+      .get("http://localhost:3000/posts")
+      .then(({ data }) => {
+        const { posts } = data;
+
+        this.setState(prevState => ({
+          ...prevState,
+          posts: posts
+        }));
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  }
+
+  checkDate = (post, day, month) => {
+    let [mm, dd] = post.date.split(" ");
+    if (dd === day && mm === month) return true;
+    return false;
+  };
+  changeDay = day => {
+    this.setState({
+      currentDay: day
+    });
   };
 
   renderHeader() {
@@ -57,11 +91,13 @@ class Calendar extends React.Component {
     let days = [];
     let day = startDate;
     let formattedDate = "";
+    let cMonth = dateFns.getMonth(currentMonth).toString();
 
     while (day <= endDate) {
       for (let i = 0; i < 7; i++) {
         formattedDate = dateFns.format(day, dateFormat);
         const cloneDay = day;
+
         days.push(
           <div
             className={`col cell ${
@@ -76,8 +112,19 @@ class Calendar extends React.Component {
           >
             <span className="number">{formattedDate}</span>
             <span className="bg">{formattedDate}</span>
+
+            <div className="post-list">
+              {this.state.posts.map((post, i) => {
+                return this.checkDate(post, formattedDate, cMonth) ? (
+                  <Link key={i} to={`/posts/${post._id}`}>
+                    <h5 style={{ backgroundColor: "red" }}> {post.title}</h5>{" "}
+                  </Link>
+                ) : null;
+              })}
+            </div>
           </div>
         );
+
         day = dateFns.addDays(day, 1);
       }
       rows.push(

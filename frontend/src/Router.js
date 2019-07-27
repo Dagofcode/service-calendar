@@ -7,7 +7,7 @@ import WrappedNormalLoginForm from "./components/Auth/Login";
 import WrappedRegistrationForm from "./components/Auth/Signup";
 
 function Navbar() {
-  const loggedUser = localStorage.getItem("loggedUser");
+  //const loggedUser = localStorage.getItem("loggedUser");
   return (
     <div className="Navbar">
       <div className="nav-first">

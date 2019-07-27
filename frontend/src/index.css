@@ -201,8 +201,9 @@ main {
 .calendar .body .cell {
   position: relative;
   height: 12vh;
+
   border-right: 1px solid var(--border-color);
-  overflow: hidden;
+  overflow-y: scroll;
   cursor: pointer;
   background: var(--neutral-color);
   transition: 0.25s ease-out;
@@ -239,6 +240,12 @@ main {
   right: 0.75em;
   font-weight: 700;
 }
+.calendar .body .cell .post-list {
+  position: absolute;
+  width: 100%;
+  top: 2.5em;
+  left: 0;
+}
 
 .calendar .body .disabled {
   color: var(--text-color-light);
@@ -268,6 +275,10 @@ main {
   flex-grow: 0;
   flex-basis: calc(100% / 7);
   width: calc(100% / 7);
+}
+.ScrollStyle {
+  max-height: 150px;
+  overflow-y: scroll;
 }
 
 /* PROFILES */

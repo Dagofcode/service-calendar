@@ -11,7 +11,7 @@ function useForm() {
     }));
   };
 
-  return [form, handleInput];
+  return [form, handleInput, setForm];
 }
 
 export default useForm;
