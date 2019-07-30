@@ -1,22 +1,22 @@
 const { Schema, model } = require("mongoose");
 
-const postSchema = new Schema(
+const calendarSchema = new Schema(
   {
-    title: {
+    month: {
       type: String,
       required: true
     },
-    description: {
+    day: {
       type: String,
       required: true
     },
-    author: {
+    year: {
+      type: String,
+      required: true
+    },
+    post: {
       type: Schema.Types.ObjectId,
-      ref: "USER"
-    },
-    date: {
-      type: String,
-      required: true
+      ref: "Post"
     }
   },
   {
@@ -25,4 +25,4 @@ const postSchema = new Schema(
   }
 );
 
-module.exports = model("Post", postSchema);
+module.exports = model("Calendar", calendarSchema);

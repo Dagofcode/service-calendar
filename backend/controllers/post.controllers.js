@@ -1,7 +1,7 @@
 const Post = require("../models/Post");
 
 exports.createPost = (req, res, next) => {
-  Post.create({ ...req.body })
+  Post.create({ ...req.body.form, author: req.body.author })
     .then(post => {
       res.status(200).json({ post, msg: "post created" });
     })
@@ -30,11 +30,20 @@ exports.getSinglePost = (req, res, next) => {
       res.status(500).json({ err });
     });
 };
+exports.getAuthorPosts = (req, res, next) => {
+  Post.find({ author: req.params.id })
+    .then(posts => {
+      res.status(200).json({ posts });
+    })
+    .catch(err => {
+      res.status(500).json({ err });
+    });
+};
 
 exports.updatePost = (req, res, next) => {
   const { id } = req.params;
 
-  Post.findByIdAndUpdate(id, { ...req.body }, { new: true })
+  Post.findByIdAndUpdate(id, { ...req.body.form }, { new: true })
     .then(post => {
       res.status(200).json({ post });
     })
@@ -45,7 +54,9 @@ exports.updatePost = (req, res, next) => {
 
 exports.deletePost = (req, res, next) => {
   const { id } = req.params;
+  console.log(id);
+
   Post.findByIdAndDelete(id)
-    .then(post => res.status(200).json({ food, msg: "Deleted post" }))
+    .then(post => res.status(200).json({ post, msg: "Deleted post" }))
     .catch(err => res.status(500).json({ err }));
 };

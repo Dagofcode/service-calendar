@@ -156,7 +156,7 @@ main {
 .calendar {
   display: block;
   position: relative;
-  width: 90vw;
+  width: 75vw;
   background: var(--neutral-color);
   border: 1px solid var(--border-color);
   box-shadow: 0 4px 2px -2px gray;
@@ -201,7 +201,6 @@ main {
 .calendar .body .cell {
   position: relative;
   height: 12vh;
-
   border-right: 1px solid var(--border-color);
   overflow-y: scroll;
   cursor: pointer;
@@ -281,6 +280,20 @@ main {
   overflow-y: scroll;
 }
 
+.signup-container {
+  width: 100vw;
+  height: 90vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.signup-form {
+  width: 60vw;
+  height: 50vh;
+  margin-right: 20vw;
+}
+
 /* PROFILES */
 .user-profile {
   width: 100vw;
@@ -319,4 +332,84 @@ main {
 .form-container {
   width: 100vw;
   height: 90vh;
+}
+.provider-container {
+  width: 100vw;
+  height: 90vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.provider-content {
+  width: 90vw;
+  height: 80vh;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+
+  background-color: white;
+  overflow-y: scroll;
+}
+.provider-img {
+  width: 100vw;
+  height: 12vh;
+  background-image: url("images/calendar-660670_1920.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+.provider-sideBar {
+  width: 30vw;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  margin-top: 15vh;
+}
+.sideBar-img {
+  border-radius: 50%;
+}
+.provider-col {
+  width: 50vw;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#createPost {
+  margin-top: 10vh;
+
+  width: 80%;
+}
+#provider-profile {
+  margin-top: 10vh;
+  width: 80%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+#provider-events {
+  margin-top: 10vh;
+  overflow-y: scroll;
+}
+.tabs {
+  width: 100%;
+}
+.event-card {
+  width: 70%;
+  margin-bottom: 50px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.profile-data {
+  border-bottom: 1px dashed var(--main-color);
+  width: 100%;
+  height: 10vh;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: flex-end;
 }

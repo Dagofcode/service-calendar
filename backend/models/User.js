@@ -13,8 +13,24 @@ const userSchema = new Schema(
     },
     role: {
       type: String,
-      enum: ["USER", "ADMIN"],
+      enum: ["USER", "PROVIDER"],
       default: "USER"
+    },
+    company: {
+      type: String,
+      required: false
+    },
+    phone: {
+      type: String,
+      required: false
+    },
+    address: {
+      type: String,
+      required: false
+    },
+    website: {
+      type: String,
+      required: false
     }
   },
   {

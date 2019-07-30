@@ -2,7 +2,8 @@ const User = require("../models/User");
 const { createToken } = require("../config/jwt");
 
 exports.signup = (req, res, next) => {
-  User.register({ ...req.body, role: "USER" }, req.body.password)
+  console.log(req.body);
+  User.register({ ...req.body }, req.body.password)
     .then(user => res.status(201).json({ user }))
     .catch(err => res.status(500).json({ err }));
 };

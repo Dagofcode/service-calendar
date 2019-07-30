@@ -3,6 +3,7 @@ import React from "react";
 import dateFns from "date-fns";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import { Modal } from "antd";
 
 class Calendar extends React.Component {
   state = {
@@ -18,11 +19,11 @@ class Calendar extends React.Component {
     axios
       .get("http://localhost:3000/posts")
       .then(({ data }) => {
-        const { posts } = data;
+        //const { posts } = data;
 
         this.setState(prevState => ({
           ...prevState,
-          posts: posts
+          posts: data.posts
         }));
       })
       .catch(err => {
@@ -38,6 +39,25 @@ class Calendar extends React.Component {
   changeDay = day => {
     this.setState({
       currentDay: day
+    });
+  };
+  showModal = () => {
+    this.setState({
+      visible: true
+    });
+  };
+
+  handleOk = e => {
+    console.log(e);
+    this.setState({
+      visible: false
+    });
+  };
+
+  handleCancel = e => {
+    console.log(e);
+    this.setState({
+      visible: false
     });
   };
 
@@ -84,6 +104,7 @@ class Calendar extends React.Component {
     const monthEnd = dateFns.endOfMonth(monthStart);
     const startDate = dateFns.startOfWeek(monthStart);
     const endDate = dateFns.endOfWeek(monthEnd);
+    const currentYear = dateFns.getYear(currentMonth).toString();
 
     const dateFormat = "D";
     const rows = [];
@@ -92,6 +113,7 @@ class Calendar extends React.Component {
     let day = startDate;
     let formattedDate = "";
     let cMonth = dateFns.getMonth(currentMonth).toString();
+    console.log(currentYear);
 
     while (day <= endDate) {
       for (let i = 0; i < 7; i++) {
@@ -116,10 +138,10 @@ class Calendar extends React.Component {
             <div className="post-list">
               {this.state.posts.map((post, i) => {
                 return this.checkDate(post, formattedDate, cMonth) ? (
-                  <Link key={i} to={`/posts/${post._id}`}>
-                    <h5 style={{ backgroundColor: "red" }}> {post.title}</h5>{" "}
-                  </Link>
-                ) : null;
+                  //<Link key={i} to={`/posts/${post._id}`}>
+                  <h5 style={{ backgroundColor: "#1a8fff" }}>{post.title}</h5>
+                ) : //</Link>
+                null;
               })}
             </div>
           </div>
@@ -127,6 +149,7 @@ class Calendar extends React.Component {
 
         day = dateFns.addDays(day, 1);
       }
+
       rows.push(
         <div className="row" key={day}>
           {days}
@@ -138,9 +161,11 @@ class Calendar extends React.Component {
   }
 
   onDateClick = day => {
+    console.log(day);
     this.setState({
       selectedDate: day
     });
+    this.showModal();
   };
 
   nextMonth = () => {

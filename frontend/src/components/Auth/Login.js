@@ -68,10 +68,6 @@ class NormalLoginForm extends Component {
             )}
           </Form.Item>
           <Form.Item>
-            {getFieldDecorator("remember", {
-              valuePropName: "checked",
-              initialValue: true
-            })}
             <Button
               type="primary"
               htmlType="submit"
