@@ -36,6 +36,6 @@ router.delete("/posts/:id", post.deletePost);
 router.post("/calendar", calendar.createCalendar);
 router.get("/calendar", calendar.getAllCalendar);
 router.get("/calendar/post/:id", calendar.getSingleCalendar);
-router.delete("calendar/:id", calendar.deleteCalendar);
+router.delete("/calendar/:id", calendar.deleteCalendar);
 
 module.exports = router;

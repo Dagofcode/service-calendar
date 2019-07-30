@@ -6,14 +6,18 @@ import WrappedRegistrationForm from "./components/Auth/Signup";
 import PostEdit from "./components/Posts/PostEdit";
 import axios from "axios";
 import Profile from "./components/Profiles/Profile";
+
+const baseURL = "https://service-calendar.herokuapp.com";
+//const baseURL = 'http://localhost:3000'
+
 function Navbar(props) {
   const user = JSON.parse(localStorage.getItem("loggedUser"));
 
-  console.log("user in navbar", user);
+  //console.log("user in navbar", user);
   const Logout = () => {
     console.log("logginout");
     axios
-      .get("http://localhost:3000/logout")
+      .get(`${baseURL}/logout`)
       .then(() => {
         localStorage.clear();
       })

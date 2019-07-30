@@ -1,32 +1,30 @@
 import React, { useState, useEffect } from "react";
-import { DatePicker, Input, Button, Tabs, Spin, Card } from "antd";
+import { DatePicker, Input, Button, Tabs, Spin } from "antd";
 import dateFn from "date-fns";
 import axios from "axios";
 import useForm from "../../hooks/useForm";
 import imgDefault from "../../images/default.jpeg";
 
+const baseURL = "https://service-calendar.herokuapp.com";
+//const baseURL = 'http://localhost:3000'
 const { TabPane } = Tabs;
-const { Meta } = Card;
 const Profile = props => {
   const [form, handleInput, setForm] = useForm();
   //const [updateForm, editHandleInput] = useForm();
 
   const [posts, setPosts] = useState([]);
   const [user] = useState(JSON.parse(localStorage.getItem("loggedUser")));
-
+  const id = user._id;
   useEffect(() => {
     axios
-      .get(`http://localhost:3000/posts/author/${user._id}`)
-      .then(({ data }) => {
-        setPosts(prevState => ({
-          ...prevState,
-          posts: data.posts
-        }));
+      .get(`${baseURL}/posts/author/${id}`)
+      .then(({ data: { posts } }) => {
+        setPosts(posts);
       })
       .catch(err => {
         console.log(err);
       });
-  }, [user]);
+  }, []);
 
   const onSelect = value => {
     const currentMonth = dateFn.getMonth(value._d);
@@ -43,32 +41,59 @@ const Profile = props => {
 
   const deletePost = id => {
     axios
-      .delete(`http://localhost:3000/posts/${id}`)
-      .then(({ data }) => {})
+      .delete(`${baseURL}/posts/${id}`)
+      .then(({ data }) => {
+        const arr = posts.filter(post => post._id !== data.post._id);
+        console.log(arr);
+        setPosts(arr);
+      })
       .catch(err => {
         console.log(err);
       });
+
+    // axios
+    //   .delete(`http://localhost:3000/calendar/${id}`)
+    //   .then(({ data }) => {
+    //     console.log(data);
+    //   })
+    //   .catch(err => {
+    //     console.log(err);
+    //   });
   };
 
   const handleSubmit = value => {
     const author = user._id;
 
     axios
-      .post("http://localhost:3000/posts", { form, author })
-      .then(post => {
-        setPosts(prevState => ({
-          ...prevState,
-          post
-        }));
+      .post(`${baseURL}/posts`, { form, author })
+      .then(({ data: { post } }) => {
+        //const arr = posts.filter(post => post._id === data.post._id)
+        setPosts([...posts, post]);
+        console.log(posts);
       })
-      .catch(err => {
-        console.log(err);
-      });
+      .catch(err => {});
+
+    // posts.map((post, i) => {
+    //   let [month, day, year] = post.date.split(" ");
+    //   const obj = {
+    //     day,
+    //     month,
+    //     year,
+    //     post: post._id
+    //   };
+
+    //   axios
+    //     .post("http://localhost:3000/calendar", { ...obj })
+    //     .then(calendar => {})
+    //     .catch(err => {
+    //       console.log(err);
+    //     });
+    // });
   };
   const updatePost = id => {
     console.log("inside update");
     axios
-      .patch(`http://localhost:3000/posts/${id}`, { form })
+      .patch(`${baseURL}/posts/${id}`, { form })
       .then(({ data }) => {
         console.log(data);
         setPosts(prevState => {
@@ -88,23 +113,9 @@ const Profile = props => {
       <div className="provider-container">
         <div className="provider-content">
           <div className="provider-sideBar">
-            <Card
-              hoverable
-              style={{ width: 240 }}
-              cover={
-                <img
-                  className="sideBar-img"
-                  alt="example"
-                  src="https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png"
-                />
-              }
-            >
-              <Meta
-                title="Europe Street beat"
-                description="www.instagram.com"
-              />
-            </Card>
+            <div className="overlay2" />
           </div>
+
           <div className="provider-col">
             <div className="tabs">
               <Tabs defaultActiveKey="1" type="able-card" className="tabs">
@@ -167,43 +178,38 @@ const Profile = props => {
                 </TabPane>
                 <TabPane tab="All your events" key="3">
                   <div id="provider-events">
-                    {posts.posts
-                      .slice(0)
-                      .reverse()
-                      .map((post, i) => {
-                        return (
-                          <div className="event-card" key={i}>
-                            <Input
-                              type="text"
-                              name="title"
-                              onChange={handleInput}
-                              defaultValue={`${post.title}`}
-                            />
-                            <Input.TextArea
-                              style={{ height: "200px" }}
-                              name="description"
-                              onChange={handleInput}
-                              defaultValue={`${post.description}`}
-                            />
-                            <DatePicker
-                              fullscreen={false}
-                              onChange={onSelect}
-                            />
-                            <div className="event-buttons">
-                              <Button
-                                type="danger"
-                                onClick={() => deletePost(post._id)}
-                              >
-                                Delete
-                              </Button>
-                              <Button onClick={() => updatePost(post._id)}>
-                                {" "}
-                                Edit{" "}
-                              </Button>
-                            </div>
+                    {console.log("inside render", posts)}
+                    {posts.reverse().map((post, i) => {
+                      return (
+                        <div className="event-card" key={i}>
+                          <Input
+                            type="text"
+                            name="title"
+                            onChange={handleInput}
+                            defaultValue={`${post.title}`}
+                          />
+                          <Input.TextArea
+                            style={{ height: "200px" }}
+                            name="description"
+                            onChange={handleInput}
+                            defaultValue={`${post.description}`}
+                          />
+                          <DatePicker fullscreen={false} onChange={onSelect} />
+                          <div className="event-buttons">
+                            <Button
+                              type="danger"
+                              onClick={() => deletePost(post._id)}
+                            >
+                              Delete
+                            </Button>
+                            <Button onClick={() => updatePost(post._id)}>
+                              {" "}
+                              Edit{" "}
+                            </Button>
                           </div>
-                        );
-                      })}
+                        </div>
+                      );
+                    })}
                   </div>
                 </TabPane>
               </Tabs>

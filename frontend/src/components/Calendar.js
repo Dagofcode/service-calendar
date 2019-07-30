@@ -3,7 +3,10 @@ import React from "react";
 import dateFns from "date-fns";
 import axios from "axios";
 import { Link } from "react-router-dom";
-import { Modal } from "antd";
+//import { Modal } from "antd";
+
+const baseURL = "https://service-calendar.herokuapp.com";
+//const baseURL = 'http://localhost:3000'
 
 class Calendar extends React.Component {
   state = {
@@ -17,7 +20,7 @@ class Calendar extends React.Component {
 
   componentWillMount() {
     axios
-      .get("http://localhost:3000/posts")
+      .get(`${baseURL}/posts`)
       .then(({ data }) => {
         //const { posts } = data;
 
@@ -31,9 +34,11 @@ class Calendar extends React.Component {
       });
   }
 
-  checkDate = (post, day, month) => {
-    let [mm, dd] = post.date.split(" ");
-    if (dd === day && mm === month) return true;
+  checkDate = (post, day, month, year) => {
+    let [mm, dd, yy] = post.date.split(" ");
+    if (dd === day && mm === month && yy === year) {
+      return true;
+    }
     return false;
   };
   changeDay = day => {
@@ -113,9 +118,9 @@ class Calendar extends React.Component {
     let day = startDate;
     let formattedDate = "";
     let cMonth = dateFns.getMonth(currentMonth).toString();
-    console.log(currentYear);
 
     while (day <= endDate) {
+      console.log(this.state.currentYear);
       for (let i = 0; i < 7; i++) {
         formattedDate = dateFns.format(day, dateFormat);
         const cloneDay = day;
@@ -137,11 +142,16 @@ class Calendar extends React.Component {
 
             <div className="post-list">
               {this.state.posts.map((post, i) => {
-                return this.checkDate(post, formattedDate, cMonth) ? (
-                  //<Link key={i} to={`/posts/${post._id}`}>
-                  <h5 style={{ backgroundColor: "#1a8fff" }}>{post.title}</h5>
-                ) : //</Link>
-                null;
+                return this.checkDate(
+                  post,
+                  formattedDate,
+                  cMonth,
+                  currentYear
+                ) ? (
+                  <Link key={i} to={`/posts/${post._id}`}>
+                    <h5 style={{ backgroundColor: "#1a8fff" }}>{post.title}</h5>
+                  </Link>
+                ) : null;
               })}
             </div>
           </div>

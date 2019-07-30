@@ -11,7 +11,8 @@ const passport = require("passport");
 const cors = require("cors");
 
 mongoose
-  .connect("mongodb://localhost/backend", { useNewUrlParser: true })
+  //localhost:3000/backend
+  .connect(process.env.DB, { useNewUrlParser: true })
   .then(x => {
     console.log(
       `Connected to Mongo! Database name: "${x.connections[0].name}"`
@@ -31,7 +32,7 @@ const app = express();
 app.use(
   cors({
     credentials: true,
-    origin: "http://localhost:3001"
+    origin: process.env.FRONTEND
   })
 );
 

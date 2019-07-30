@@ -1,7 +1,9 @@
 const Calendar = require("../models/Calendar");
 
 exports.createCalendar = (req, res, next) => {
-  Calendar.create({ ...req.body, post: req.body.post })
+  console.log(req.body);
+
+  Calendar.create({ ...req.body })
     .then(calendar => {
       res.status(200).json({ calendar, msg: "calendar day created" });
     })
@@ -30,7 +32,7 @@ exports.getSingleCalendar = (req, res, next) => {
     });
 };
 exports.deleteCalendar = (req, res, next) => {
-  Calendar.findByIdAndDelete(req.params.id)
+  Calendar.findOneAndDelete({ post: req.params.id })
     .then(calendar => {
       res.status(200).json({ calendar });
     })
