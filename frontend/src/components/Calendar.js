@@ -5,8 +5,8 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 //import { Modal } from "antd";
 
-const baseURL = "https://service-calendar.herokuapp.com";
-//const baseURL = 'http://localhost:3000'
+const baseURL = "https://service-calendar2.herokuapp.com";
+//const baseURL = "http://localhost:3000";
 
 class Calendar extends React.Component {
   state = {
@@ -22,8 +22,6 @@ class Calendar extends React.Component {
     axios
       .get(`${baseURL}/posts`)
       .then(({ data }) => {
-        //const { posts } = data;
-
         this.setState(prevState => ({
           ...prevState,
           posts: data.posts
@@ -44,11 +42,6 @@ class Calendar extends React.Component {
   changeDay = day => {
     this.setState({
       currentDay: day
-    });
-  };
-  showModal = () => {
-    this.setState({
-      visible: true
     });
   };
 
@@ -120,7 +113,6 @@ class Calendar extends React.Component {
     let cMonth = dateFns.getMonth(currentMonth).toString();
 
     while (day <= endDate) {
-      console.log(this.state.currentYear);
       for (let i = 0; i < 7; i++) {
         formattedDate = dateFns.format(day, dateFormat);
         const cloneDay = day;
@@ -141,18 +133,20 @@ class Calendar extends React.Component {
             <span className="bg">{formattedDate}</span>
 
             <div className="post-list">
-              {this.state.posts.map((post, i) => {
-                return this.checkDate(
-                  post,
-                  formattedDate,
-                  cMonth,
-                  currentYear
-                ) ? (
-                  <Link key={i} to={`/posts/${post._id}`}>
-                    <h5 style={{ backgroundColor: "#1a8fff" }}>{post.title}</h5>
-                  </Link>
-                ) : null;
-              })}
+              <ul>
+                {this.state.posts.map((post, i) => {
+                  return this.checkDate(
+                    post,
+                    formattedDate,
+                    cMonth,
+                    currentYear
+                  ) ? (
+                    <Link key={i} to={`/posts/${post._id}`}>
+                      <li>{post.title}</li>
+                    </Link>
+                  ) : null;
+                })}
+              </ul>
             </div>
           </div>
         );
@@ -171,11 +165,10 @@ class Calendar extends React.Component {
   }
 
   onDateClick = day => {
-    console.log(day);
     this.setState({
       selectedDate: day
     });
-    this.showModal();
+    this.props.history.push(`/posts/${day}`);
   };
 
   nextMonth = () => {

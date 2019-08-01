@@ -3,52 +3,57 @@ import { BrowserRouter, Switch, Route, NavLink } from "react-router-dom";
 import Calendar from "./components/Calendar";
 import WrappedNormalLoginForm from "./components/Auth/Login";
 import WrappedRegistrationForm from "./components/Auth/Signup";
-import PostEdit from "./components/Posts/PostEdit";
-import axios from "axios";
 import Profile from "./components/Profiles/Profile";
+import PostsList from "./components/Posts/PostsList";
+import PostDetail from "./components/Posts/PostDetail";
+import logo from "./images/service-calendar.jpg";
+import { Button } from "antd";
+import { MyContext } from "./context";
+import Logout from "./components/Auth/Logout";
 
-const baseURL = "https://service-calendar.herokuapp.com";
-//const baseURL = 'http://localhost:3000'
-
-function Navbar(props) {
-  const user = JSON.parse(localStorage.getItem("loggedUser"));
-
-  //console.log("user in navbar", user);
-  const Logout = () => {
-    console.log("logginout");
-    axios
-      .get(`${baseURL}/logout`)
-      .then(() => {
-        localStorage.clear();
-      })
-      .catch(err => {
-        console.log(err);
-      });
-  };
-  //const loggedUser = localStorage.getItem("loggedUser");
+function Navbar() {
   return (
     <div className="Navbar">
       <div className="nav-first">
         <NavLink to="/" activeClassName="nav-active">
-          <div>LOGO</div>
+          <img src={logo} style={{ width: "150px", height: "50px" }} alt="" />
         </NavLink>
-        {user !== null ? (
-          <NavLink to="/profile" activeClassName="nav-active">
-            <div>PROFILE</div>
-          </NavLink>
-        ) : null}
       </div>
-
-      <div>
-        <NavLink to="/login" activeClassName="nav-active">
-          <span>Login</span>
-        </NavLink>
-        <NavLink to="/" activeClassName="nav-active">
-          <button onClick={Logout}>Logout</button>
-        </NavLink>
-        <NavLink to="/signup" activeClassName="nav-active">
-          <span>Signup</span>
-        </NavLink>
+      <div className="buttons">
+        <MyContext.Consumer>
+          {context => {
+            if (context.state.user === null) {
+              return (
+                <>
+                  <NavLink to="/login" activeClassName="nav-active">
+                    <Button type="primary"> Login </Button>
+                  </NavLink>
+                  <NavLink to="/signup" activeClassName="nav-active">
+                    <Button type="default">Signup</Button>
+                  </NavLink>
+                </>
+              );
+            } else {
+              return (
+                <>
+                  <NavLink to="/profile" activeClassName="nav-active">
+                    <div>PROFILE</div>
+                  </NavLink>
+                  <NavLink
+                    onClick={() => {
+                      context.delUser();
+                      localStorage.clear();
+                    }}
+                    to="/"
+                    activeClassName="nav-active"
+                  >
+                    <Button>Logout</Button>
+                  </NavLink>
+                </>
+              );
+            }
+          }}
+        </MyContext.Consumer>
       </div>
     </div>
   );
@@ -62,7 +67,9 @@ function Router() {
         <Route exact path="/profile" component={Profile} />
         <Route exact path="/login" component={WrappedNormalLoginForm} />
         <Route exact path="/signup" component={WrappedRegistrationForm} />
-        <Route exact path="/posts/:id" component={PostEdit} />
+        <Route exact path="/posts/:day" component={PostsList} />
+        <Route exact path="/posts/detail/:id" component={PostDetail} />
+        <Route exact path="/logout" component={Logout} />
       </Switch>
     </BrowserRouter>
   );

@@ -1,6 +1,6 @@
 import axios from "axios";
 //const baseURL = "http://localhost:3000";
-const baseURL = "https://service-calendar.herokuapp.com";
+const baseURL = "https://service-calendar2.herokuapp.com";
 
 class AuthService {
   constructor() {

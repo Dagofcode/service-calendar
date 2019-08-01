@@ -1,21 +1,35 @@
+/* eslint-disable array-callback-return */
 import React, { useState, useEffect } from "react";
-import { DatePicker, Input, Button, Tabs, Spin } from "antd";
+import {
+  DatePicker,
+  Input,
+  Button,
+  Tabs,
+  Spin,
+  Upload,
+  Icon,
+  notification,
+  message
+} from "antd";
 import dateFn from "date-fns";
 import axios from "axios";
 import useForm from "../../hooks/useForm";
 import imgDefault from "../../images/default.jpeg";
 
-const baseURL = "https://service-calendar.herokuapp.com";
-//const baseURL = 'http://localhost:3000'
+const baseURL = "https://service-calendar2.herokuapp.com";
+//const baseURL = "http://localhost:3000";
 const { TabPane } = Tabs;
+
 const Profile = props => {
   const [form, handleInput, setForm] = useForm();
-  //const [updateForm, editHandleInput] = useForm();
-
+  const [photo, setPhoto] = useState("");
   const [posts, setPosts] = useState([]);
   const [user] = useState(JSON.parse(localStorage.getItem("loggedUser")));
   const id = user._id;
   useEffect(() => {
+    const loggedUser = localStorage.getItem("loggedUser");
+
+    if (!loggedUser) return this.props.history.push("/");
     axios
       .get(`${baseURL}/posts/author/${id}`)
       .then(({ data: { posts } }) => {
@@ -24,7 +38,7 @@ const Profile = props => {
       .catch(err => {
         console.log(err);
       });
-  }, []);
+  }, [id]);
 
   const onSelect = value => {
     const currentMonth = dateFn.getMonth(value._d);
@@ -43,72 +57,97 @@ const Profile = props => {
     axios
       .delete(`${baseURL}/posts/${id}`)
       .then(({ data }) => {
-        const arr = posts.filter(post => post._id !== data.post._id);
-        console.log(arr);
-        setPosts(arr);
+        openNotificationWithIcon("warning", "Your event has been deleted.");
       })
       .catch(err => {
         console.log(err);
       });
-
-    // axios
-    //   .delete(`http://localhost:3000/calendar/${id}`)
-    //   .then(({ data }) => {
-    //     console.log(data);
-    //   })
-    //   .catch(err => {
-    //     console.log(err);
-    //   });
+  };
+  const openNotificationWithIcon = (type, message) => {
+    notification[type]({
+      message: "Notification Title",
+      description: message
+    });
   };
 
   const handleSubmit = value => {
     const author = user._id;
+    const updatedForm = form;
+
+    updatedForm.photo = photo;
 
     axios
-      .post(`${baseURL}/posts`, { form, author })
+      .post(`${baseURL}/posts`, { updatedForm, author })
       .then(({ data: { post } }) => {
-        //const arr = posts.filter(post => post._id === data.post._id)
         setPosts([...posts, post]);
-        console.log(posts);
+        openNotificationWithIcon(
+          "success",
+          "Your event has been created, check the calendar to see!"
+        );
       })
       .catch(err => {});
 
-    // posts.map((post, i) => {
-    //   let [month, day, year] = post.date.split(" ");
-    //   const obj = {
-    //     day,
-    //     month,
-    //     year,
-    //     post: post._id
-    //   };
+    posts.map((post, i) => {
+      let [month, day, year] = post.date.split(" ");
+      const obj = {
+        day,
+        month,
+        year,
+        post: post._id
+      };
 
-    //   axios
-    //     .post("http://localhost:3000/calendar", { ...obj })
-    //     .then(calendar => {})
-    //     .catch(err => {
-    //       console.log(err);
-    //     });
-    // });
+      axios
+        .post(`${baseURL}`, { ...obj })
+        .then(calendar => {})
+        .catch(err => {
+          console.log(err);
+        });
+    });
   };
   const updatePost = id => {
     console.log("inside update");
+    // const arr = posts;
+
     axios
       .patch(`${baseURL}/posts/${id}`, { form })
-      .then(({ data }) => {
-        console.log(data);
-        setPosts(prevState => {
-          return {
-            ...prevState,
-            post: data.post
-          };
-        });
+      .then(({ data: { post } }) => {
+        openNotificationWithIcon("info", "Your event has been updated.");
       })
       .catch(err => {
         console.log(err);
       });
   };
 
-  if (posts.length !== 0 && user.role === "PROVIDER") {
+  const imageProps = {
+    name: "file",
+    action: "https://www.mocky.io/v2/5cc8019d300000980a055e76",
+    headers: {
+      authorization: "authorization-text"
+    },
+    onChange(info) {
+      if (info.file.status !== "uploading") {
+        const afile = new FormData();
+        afile.append("photo", info.file.originFileObj);
+        axios
+          .post(`${baseURL}/upload`, afile)
+          .then(({ data: { img } }) => {
+            setPhoto({
+              photo: img
+            });
+          })
+          .catch(err => {
+            console.log("what", err);
+          });
+      }
+      if (info.file.status === "done") {
+        message.success(`${info.file.name} file uploaded successfully`);
+      } else if (info.file.status === "error") {
+        message.error(`${info.file.name} file upload failed.`);
+      }
+    }
+  };
+
+  if (user.role === "PROVIDER") {
     return (
       <div className="provider-container">
         <div className="provider-content">
@@ -147,7 +186,7 @@ const Profile = props => {
                     </div>
                   </div>
                 </TabPane>
-                <TabPane tab="Create a Post" key="2">
+                <TabPane tab="Create an Event" key="2">
                   <div id="createPost">
                     <h1>Create an Event</h1>
                     <DatePicker fullscreen={false} onChange={onSelect} />
@@ -165,12 +204,16 @@ const Profile = props => {
                         placeholder="Event description"
                         onChange={handleInput}
                       />
+                      <Upload {...imageProps} name="photo">
+                        <Button>
+                          <Icon type="upload" /> Click to Upload
+                        </Button>
+                      </Upload>{" "}
                       <Button
                         type="primary submit"
                         onClick={handleSubmit}
                         onSubmit={() => useEffect}
                       >
-                        {" "}
                         Submit
                       </Button>
                     </form>
@@ -178,38 +221,44 @@ const Profile = props => {
                 </TabPane>
                 <TabPane tab="All your events" key="3">
                   <div id="provider-events">
-                    {console.log("inside render", posts)}
-                    {posts.reverse().map((post, i) => {
-                      return (
-                        <div className="event-card" key={i}>
-                          <Input
-                            type="text"
-                            name="title"
-                            onChange={handleInput}
-                            defaultValue={`${post.title}`}
-                          />
-                          <Input.TextArea
-                            style={{ height: "200px" }}
-                            name="description"
-                            onChange={handleInput}
-                            defaultValue={`${post.description}`}
-                          />
-                          <DatePicker fullscreen={false} onChange={onSelect} />
-                          <div className="event-buttons">
-                            <Button
-                              type="danger"
-                              onClick={() => deletePost(post._id)}
-                            >
-                              Delete
-                            </Button>
-                            <Button onClick={() => updatePost(post._id)}>
-                              {" "}
-                              Edit{" "}
-                            </Button>
+                    {posts.length !== 0 ? (
+                      posts.reverse().map((post, i) => {
+                        return (
+                          <div className="event-card" key={i}>
+                            <Input
+                              type="text"
+                              name="title"
+                              onChange={handleInput}
+                              defaultValue={`${post.title}`}
+                            />
+                            <Input.TextArea
+                              style={{ height: "200px" }}
+                              name="description"
+                              onChange={handleInput}
+                              defaultValue={`${post.description}`}
+                            />
+                            <DatePicker
+                              fullscreen={false}
+                              onChange={onSelect}
+                            />
+                            <div className="event-buttons">
+                              <Button
+                                type="danger"
+                                onClick={() => deletePost(post._id)}
+                              >
+                                Delete
+                              </Button>
+                              <Button onClick={() => updatePost(post._id)}>
+                                {" "}
+                                Edit{" "}
+                              </Button>
+                            </div>
                           </div>
-                        </div>
-                      );
-                    })}
+                        );
+                      })
+                    ) : (
+                      <h1>no posts</h1>
+                    )}
                   </div>
                 </TabPane>
               </Tabs>
@@ -233,9 +282,7 @@ const Profile = props => {
             </div>
           </div>
         </div>
-        <div className="right-box">
-          <h1>Posts you saved.</h1>
-        </div>
+        <div className="right-box" />
       </div>
     );
   } else {

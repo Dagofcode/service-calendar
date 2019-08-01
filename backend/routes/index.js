@@ -5,6 +5,8 @@ const { verifyToken } = require("../config/jwt");
 const passport = require("../config/passport");
 const post = require("../controllers/post.controllers");
 const calendar = require("../controllers/calendar.controllers");
+const uploadCloud = require("../config/cloudinary");
+const { upload } = require("../controllers/upload.controllers");
 
 //AUTHENTICATION ROUTES
 router.post("/signup", auth.signup);
@@ -37,5 +39,10 @@ router.post("/calendar", calendar.createCalendar);
 router.get("/calendar", calendar.getAllCalendar);
 router.get("/calendar/post/:id", calendar.getSingleCalendar);
 router.delete("/calendar/:id", calendar.deleteCalendar);
+
+//routes for cloudinary
+router.post("/upload", uploadCloud.single("photo"), upload);
+
+//REST CRUD ROUTES FOR COMMENT MODEL
 
 module.exports = router;

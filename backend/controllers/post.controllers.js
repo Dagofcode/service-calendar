@@ -1,7 +1,12 @@
 const Post = require("../models/Post");
 
 exports.createPost = (req, res, next) => {
-  Post.create({ ...req.body.form, author: req.body.author })
+  console.log(req.body.updatedForm);
+  Post.create({
+    ...req.body.updatedForm,
+    author: req.body.author,
+    photo: req.body.updatedForm.photo.photo
+  })
     .then(post => {
       res.status(200).json({ post, msg: "post created" });
     })

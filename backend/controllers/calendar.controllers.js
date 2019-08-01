@@ -1,8 +1,6 @@
 const Calendar = require("../models/Calendar");
 
 exports.createCalendar = (req, res, next) => {
-  console.log(req.body);
-
   Calendar.create({ ...req.body })
     .then(calendar => {
       res.status(200).json({ calendar, msg: "calendar day created" });
