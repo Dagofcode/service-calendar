@@ -7,14 +7,18 @@ The way it works is a user can make posts when they register as a provider, they
 into their profile and select the tab "create an event". Once they do, they can edit, delete, 
 or simply make a new post. 
 
-# Testing Accounts
-These are accounts incase a user wants to test or they can simply make new accounts. 
+# Technologies to install in order to run locally
+1. Mongo Database
 
-email: judge1@gmail.com | password: 123
+# How to run the program local
+1. Run Mongo database locally with command 'mongod'
+2. Go into the backend folder
+3. Run npm i
+4. Run npm run dev
+5. Go into the frontend folder
+6. Run npm i
+7. Run npm start
 
-email: judge2@gmail.com | password: 123
-
-email: judge3@gmail.com | password: 123
 
 # Future Plans
 
